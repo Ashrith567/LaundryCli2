@@ -95,3 +95,48 @@ To learn more about React Native, take a look at the following resources:
 - [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
 - [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+
+
+**Install dependencies required for this project**
+## Android
+npm install @react-navigation/native
+npm install react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated react-native-vector-icons
+npm install react-native-vector-icons npm install react-native-paper
+npm install @react-navigation/stack
+npm install react-native-vector-icons/MaterialCommunityIcons
+npm install react-native-modal
+npm install react-native-maps react-native-geocoding @react-native-community/geolocation
+npm install react-native-google-places-autocomplete
+
+## Add this in your build.gradle inside your app folder path: android/app/build.gradle
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+- And can be fixed using quickfix
+
+**Add these in the AndroidManifest.xml file**
+
+## Add these in at the top
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+## These under application -> meta-data
+<meta-data
+    android:name="com.google.android.geo.API_KEY"
+    android:value="AIzaSyCXdOMePZ2nEuqq6R60zCs_brH62T-yIxE"/>
+
+**Create a network_security_config file under main -> res -> xml (create folder)**
+
+## For development use
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">localhost</domain>
+    </domain-config>
+</network-security-config>
+
+## For production use
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false" />
+</network-security-config>
+
