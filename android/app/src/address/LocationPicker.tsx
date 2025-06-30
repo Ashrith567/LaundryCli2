@@ -12,19 +12,20 @@ import { Appbar, Button, Text } from 'react-native-paper';
 import Geocoder from 'react-native-geocoding';
 import Geolocation from '@react-native-community/geolocation';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useNavigation, useFocusEffect, RouteProp, useRoute } from '@react-navigation/native';
 
 type RootStackParamList = {
-  LocationPicker: undefined;
+  LocationPicker: { region?: Region };
   LocationSearch: { initialQuery: string };
   ConfirmLocation: { coords: Region; address: string };
 };
 
+
 Geocoder.init('AIzaSyBUbPOsL9VhLs2kyszlZmQyTTVovT57s1Q'); // Replace with your actual key
 
 const DEFAULT_REGION: Region = {
-  latitude: 17.440697,
-  longitude: 78.357469,
+  latitude: 18.101672,
+  longitude: 78.850939,
   latitudeDelta: 0.005,
   longitudeDelta: 0.005,
 };
@@ -39,6 +40,10 @@ const LocationPicker = () => {
   const [locationFetchFailed, setLocationFetchFailed] = useState<boolean>(false);
   const mapRef = useRef<MapView>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const regionUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const route = useRoute<RouteProp<RootStackParamList, 'LocationPicker'>>();
+const passedRegion = route.params?.region;
+
 
   const requestLocationPermission = useCallback(async () => {
     if (Platform.OS === 'android') {
@@ -79,7 +84,7 @@ const LocationPicker = () => {
         },
         {
           enableHighAccuracy: true,
-          timeout: 20000, // Increased timeout for better reliability
+          timeout: 6000, // Increased timeout for better reliability
           maximumAge: 10000,
         }
       );
@@ -135,114 +140,127 @@ const LocationPicker = () => {
 
   useFocusEffect(
     useCallback(() => {
+      if (passedRegion && mapRef.current) {
+        mapRef.current.animateToRegion(passedRegion, 1000);
+        setRegion(passedRegion);
+        reverseGeocode(passedRegion);
+        return;
+      }
+
       fetchInitialLocation();
+
       return () => {
         if (debounceRef.current) {
           clearTimeout(debounceRef.current);
         }
       };
-    }, [fetchInitialLocation])
+    }, [fetchInitialLocation, passedRegion, reverseGeocode])
   );
+
 
   const handleRegionChangeComplete = useCallback(
     (newRegion: Region) => {
-      // Ensure region is updated only if it differs significantly
       if (
-        Math.abs(newRegion.latitude - region.latitude) > 0.0001 ||
-        Math.abs(newRegion.longitude - region.longitude) > 0.0001 ||
-        Math.abs(newRegion.latitudeDelta - region.latitudeDelta) > 0.0001 ||
-        Math.abs(newRegion.longitudeDelta - region.longitudeDelta) > 0.0001
+        Math.abs(newRegion.latitude - region.latitude) > 0.00001 ||
+        Math.abs(newRegion.longitude - region.longitude) > 0.00001 ||
+        Math.abs(newRegion.latitudeDelta - region.latitudeDelta) > 0.00001 ||
+        Math.abs(newRegion.longitudeDelta - region.longitudeDelta) > 0.00001
       ) {
-        setRegion(newRegion);
-        console.log('Region updated:', newRegion);
-        if (debounceRef.current) {
-          clearTimeout(debounceRef.current);
+        if (regionUpdateTimeoutRef.current) {
+          clearTimeout(regionUpdateTimeoutRef.current);
         }
-        debounceRef.current = setTimeout(() => {
+
+        regionUpdateTimeoutRef.current = setTimeout(() => {
+          setRegion(newRegion);
           reverseGeocode(newRegion);
-        }, 2000); // Reduced debounce for faster response
+          console.log('Region updated with timeout:', newRegion);
+        }, 2000);
       }
     },
     [region, reverseGeocode]
   );
 
-const styles = StyleSheet.create({
-  markerFixed: {
-    position: 'absolute',
-    top: height / 2 - 32,
-    left: width / 2 - 16,
-    zIndex: 10,
-  },
-  markerText: {
-    fontSize: 32,
-  },
-  bottom: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    backgroundColor: 'white',
-    padding: 16,
-    borderTopColor: '#ccc',
-    borderTopWidth: 1,
-  },
-  btnRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 12,
-  },
-});
+  const styles = StyleSheet.create({
+    markerFixed: {
+      position: 'absolute',
+      top: height / 2 - 32,
+      left: width / 2 - 16,
+      zIndex: 10,
+    },
+    markerText: {
+      fontSize: 32,
+    },
+    bottom: {
+      position: 'absolute',
+      bottom: 0,
+      width: '100%',
+      backgroundColor: 'white',
+      padding: 16,
+      borderTopColor: '#ccc',
+      borderTopWidth: 1,
+    },
+    btnRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: 12,
+    },
+  });
 
   return (
-  <View style={StyleSheet.absoluteFill}>
-    {/* Appbar at the top */}
-    <Appbar.Header>
-      <Appbar.BackAction onPress={() => navigation.goBack()} />
-      <Appbar.Content title="Select Location" />
-    </Appbar.Header>
+    <View style={StyleSheet.absoluteFill}>
+      {/* Appbar at the top */}
+      <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content title="Select Location" />
+      </Appbar.Header>
 
-    {/* Map section below the Appbar */}
-    <View style={{ flex: 1 }}>
-      <MapView
-        ref={mapRef}
-        style={{ width: '100%', height: '100%' }}
-        region={region}
-        onRegionChangeComplete={handleRegionChangeComplete}
-        showsUserLocation={true}
-        followsUserLocation={false}
-      />
+      {/* Map section below the Appbar */}
+      <View style={{ flex: 1 }}>
+        <MapView
+          ref={mapRef}
+          style={{ width: '100%', height: '100%' }}
+          region={region}
+          onRegionChangeComplete={handleRegionChangeComplete}
+          showsUserLocation={true}
+          followsUserLocation={false}
+          scrollEnabled={!isLoading}
+          zoomEnabled={!isLoading}
+          rotateEnabled={!isLoading}
+          pitchEnabled={!isLoading}
+        />
 
-      {/* Center marker */}
-      <View pointerEvents="none" style={styles.markerFixed}>
-        <Text style={styles.markerText}>📍</Text>
+        {/* Center marker */}
+        <View pointerEvents="none" style={styles.markerFixed}>
+          <Text style={styles.markerText}>📍</Text>
+        </View>
+      </View>
+
+      {/* Bottom address + buttons */}
+      <View style={styles.bottom}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          {isLoading && <ActivityIndicator size="small" style={{ marginRight: 8 }} />}
+          <Text numberOfLines={1} style={{ flex: 1 }}>{address}</Text>
+        </View>
+
+        <View style={styles.btnRow}>
+          <Button onPress={() => navigation.navigate('LocationSearch', { initialQuery: address })}>
+            Search
+          </Button>
+          <Button
+            mode="contained"
+            disabled={isLoading || locationFetchFailed}
+            onPress={() =>
+              navigation.navigate('ConfirmLocation', {
+                coords: region,
+                address,
+              })
+            }
+          >
+            Confirm Location
+          </Button>
+        </View>
       </View>
     </View>
-
-    {/* Bottom address + buttons */}
-    <View style={styles.bottom}>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        {isLoading && <ActivityIndicator size="small" style={{ marginRight: 8 }} />}
-        <Text numberOfLines={1} style={{ flex: 1 }}>{address}</Text>
-      </View>
-
-      <View style={styles.btnRow}>
-        <Button onPress={() => navigation.navigate('LocationSearch', { initialQuery: address })}>
-          Search
-        </Button>
-        <Button
-          mode="contained"
-          disabled={isLoading || locationFetchFailed}
-          onPress={() =>
-            navigation.navigate('ConfirmLocation', {
-              coords: region,
-              address,
-            })
-          }
-        >
-          Confirm Location
-        </Button>
-      </View>
-    </View>
-  </View>
-);
+  );
 }
 export default LocationPicker;
