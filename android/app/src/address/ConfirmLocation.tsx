@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Appbar, Button, TextInput, Text, useTheme } from 'react-native-paper';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useNavigation,RouteProp, useRoute } from '@react-navigation/native';
+import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
 import { useAddress, Address } from '../context/addressContext';
+import { BackHandler } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 type RootStackParamList = {
   ConfirmLocation: { coords: any; address: string };
@@ -26,10 +28,25 @@ const ConfirmLocation = () => {
     navigation.popToTop();
   };
 
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        navigation.pop(2);
+        return true; // prevent default back behavior
+      };
+
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => {
+        backHandler.remove();
+      };
+    }, [navigation])
+  );
+
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <Appbar.Header>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.BackAction onPress={() => navigation.pop(2)} />
         <Appbar.Content title="Confirm Location" />
       </Appbar.Header>
       <View style={styles.container}>
