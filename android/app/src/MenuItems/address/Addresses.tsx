@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
-import { Appbar, Button, Card, RadioButton, useTheme } from 'react-native-paper';
-import { useAddress } from '../context/addressContext';
+import { Appbar, Button, Card, RadioButton, Text, useTheme } from 'react-native-paper';
+import { useAddress } from '../../context/addressContext';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 
@@ -33,12 +33,24 @@ const Addresses = () => {
         }
         renderItem={({ item }) => {
           const selected = currentAddress?.id === item.id;
+          // Construct full address string with optional fields
+          const addressDetails = [
+            item.buildingName,
+            item.flatNumber ? `Flat ${item.flatNumber}` : null,
+            item.line1,
+            item.city,
+            item.state,
+            item.zip,
+            item.notes ? `Notes: ${item.notes}` : null,
+          ].filter(Boolean).join(', ');
+
           return (
             <Card style={styles.card} onPress={() => selectAddress(item.id)}>
               <Card.Content style={styles.cardContent}>
                 <RadioButton.Android value={item.id} status={selected ? 'checked' : 'unchecked'} />
-                <View style={{ marginLeft: 8 }}>
-                  <Card.Title title={item.label} subtitle={`${item.line1}, ${item.city}`} />
+                <View style={{ marginLeft: 8, flex: 1 }}>
+                  {/* Updated to display label and full address details */}
+                  <Card.Title title={item.label} subtitle={addressDetails} subtitleNumberOfLines={3} />
                 </View>
               </Card.Content>
             </Card>

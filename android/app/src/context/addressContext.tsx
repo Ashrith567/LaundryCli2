@@ -1,6 +1,7 @@
 import React, { createContext, useContext, ReactNode, useState } from 'react';
 
 export interface Address {
+  notes: any;
   id: string;
   label: string;
   line1: string;
@@ -10,6 +11,8 @@ export interface Address {
   zip: string;
   phone: string;
   coords?: { latitude: number; longitude: number };
+  buildingName?: string; // New field for building name
+  flatNumber?: string; // New field for flat number
 }
 
 interface AddressContextType {

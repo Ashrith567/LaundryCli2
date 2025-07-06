@@ -11,11 +11,12 @@ import Checkout from '../screens/Checkout';
 import LoginPage from '../screens/LoginPage';
 import DryClean from '../screens/DryClean';
 import SteamIron from '../screens/SteamIron';
-import YourOrders from '../screens/YourOrders';
-import Addresses from '../screens/Addresses';
-import LocationPicker from '../address/LocationPicker';
-import LocationSearch from '../address/LocationSearch';
-import ConfirmLocation from '../address/ConfirmLocation';
+import YourOrders from '../MenuItems/orders/YourOrders';
+import Addresses from '../MenuItems/address/Addresses';
+import LocationPicker from '../MenuItems/address/LocationPicker';
+import LocationSearch from '../MenuItems/address/LocationSearch';
+import ConfirmLocation from '../MenuItems/address/ConfirmLocation';
+import Profile from '../MenuItems/profile/Profile';
 
 enableScreens();
 
@@ -26,7 +27,7 @@ const AppNavigator = () => {
     <CartProvider>
       <AddressProvider>
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="ServiceSelection">
+            <Stack.Navigator initialRouteName="LoginPage">
             <Stack.Screen name="LoginPage" component={LoginPage} options={{ headerShown: false }} />
             <Stack.Screen name="ServiceSelection" component={ServiceSelection} options={{ headerShown: false }} />
             <Stack.Screen name="WashLaundry" component={WashLaundry} options={{ headerShown: false }} />
@@ -40,6 +41,7 @@ const AppNavigator = () => {
             <Stack.Screen name="LocationPicker" component={LocationPicker} options={{ headerShown: false }} />
             <Stack.Screen name="LocationSearch" component={LocationSearch} options={{ headerShown: false }} />
             <Stack.Screen name="ConfirmLocation" component={ConfirmLocation} options={{ headerShown: false }} />
+            <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
           </Stack.Navigator>
         </NavigationContainer>
       </AddressProvider>
