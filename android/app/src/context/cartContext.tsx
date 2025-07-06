@@ -18,6 +18,7 @@ type Order = {
   totalPrice: number;
   placedAt: string; // ISO string for date/time
   selectedSlot: string; // Include selected slot from cart
+  status: 'ordered' | 'picked_up' | 'in_progress' | 'delivered' | 'cancelled';
 };
 
 // Define cart context type

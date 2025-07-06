@@ -13,6 +13,7 @@ import Geocoder from 'react-native-geocoding';
 import Geolocation from '@react-native-community/geolocation';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation, useFocusEffect, RouteProp, useRoute } from '@react-navigation/native';
+import { GOOGLE_MAPS_API_KEY } from '@env';
 
 type RootStackParamList = {
   LocationPicker: { region?: Region };
@@ -21,7 +22,7 @@ type RootStackParamList = {
 };
 
 
-Geocoder.init('AIzaSyBUbPOsL9VhLs2kyszlZmQyTTVovT57s1Q'); // Replace with your actual key
+Geocoder.init(GOOGLE_MAPS_API_KEY); // Replace with your actual key
 
 const DEFAULT_REGION: Region = {
   latitude: 18.101672,
@@ -42,7 +43,9 @@ const LocationPicker = () => {
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const regionUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const route = useRoute<RouteProp<RootStackParamList, 'LocationPicker'>>();
-const passedRegion = route.params?.region;
+  const passedRegion = route.params?.region;
+  const [isMapInteracting, setIsMapInteracting] = useState<boolean>(false);
+
 
 
   const requestLocationPermission = useCallback(async () => {
@@ -104,10 +107,11 @@ const passedRegion = route.params?.region;
       console.log('Geocoding success:', newAddress, region);
     } catch (error: any) {
       console.warn('Geocoding error:', error?.message || error);
-      setAddress('Failed to fetch address');
+      setAddress('Failed to locate address');
       setLocationFetchFailed(true);
     } finally {
       setIsLoading(false);
+      setIsMapInteracting(false);
     }
   }, []);
 
@@ -130,7 +134,7 @@ const passedRegion = route.params?.region;
       }
     } catch {
       setRegion(DEFAULT_REGION);
-      setAddress('Failed to fetch location');
+      setAddress('Failed to get location');
       setLocationFetchFailed(true);
       await reverseGeocode(DEFAULT_REGION);
     } finally {
@@ -157,6 +161,9 @@ const passedRegion = route.params?.region;
     }, [fetchInitialLocation, passedRegion, reverseGeocode])
   );
 
+  const handleRegionChange = useCallback(() => {
+    setIsMapInteracting(true);
+  }, []);
 
   const handleRegionChangeComplete = useCallback(
     (newRegion: Region) => {
@@ -220,6 +227,7 @@ const passedRegion = route.params?.region;
           ref={mapRef}
           style={{ width: '100%', height: '100%' }}
           region={region}
+          onRegionChange={handleRegionChange}
           onRegionChangeComplete={handleRegionChangeComplete}
           showsUserLocation={true}
           followsUserLocation={false}
@@ -248,7 +256,7 @@ const passedRegion = route.params?.region;
           </Button>
           <Button
             mode="contained"
-            disabled={isLoading || locationFetchFailed}
+            disabled={isLoading || locationFetchFailed || isMapInteracting}
             onPress={() =>
               navigation.navigate('ConfirmLocation', {
                 coords: region,

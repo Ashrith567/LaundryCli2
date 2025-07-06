@@ -7,6 +7,7 @@ import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navig
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-get-random-values'
 import { BackHandler } from 'react-native';
+import { GOOGLE_MAPS_API_KEY } from '@env';
 
 type RootStackParamList = {
   LocationSearch: { initialQuery: string };
@@ -94,7 +95,7 @@ const LocationSearch = () => {
         fetchDetails
         enablePoweredByContainer={false}
         query={{
-          key: 'AIzaSyBUbPOsL9VhLs2kyszlZmQyTTVovT57s1Q',
+          key: GOOGLE_MAPS_API_KEY,
           language: 'en',
         }}
         textInputProps={{
