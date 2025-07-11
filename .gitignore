@@ -76,3 +76,6 @@ yarn-error.log
 
 #env file
 .env
+
+android/app/src/main
+android/app/src/debug
