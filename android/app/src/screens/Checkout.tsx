@@ -14,6 +14,7 @@ type RootStackParamList = {
   Addresses: undefined;
 };
 
+
 const Checkout = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const { cart, resetCart, addOrder } = useCart();
