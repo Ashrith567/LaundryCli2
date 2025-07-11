@@ -299,7 +299,6 @@ export default function LoginPage() {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Button
               onPress={handleResendOtp}
-              // disabled={timer > 0}
               textColor={textColor}
             >
               Resend Code

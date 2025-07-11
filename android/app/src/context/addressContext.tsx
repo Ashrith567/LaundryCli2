@@ -11,8 +11,8 @@ export interface Address {
   zip: string;
   phone: string;
   coords?: { latitude: number; longitude: number };
-  buildingName?: string; // New field for building name
-  flatNumber?: string; // New field for flat number
+  buildingName?: string;
+  flatNumber?: string;
 }
 
 interface AddressContextType {

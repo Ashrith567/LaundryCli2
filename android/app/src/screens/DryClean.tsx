@@ -20,12 +20,10 @@ const DryClean: React.FC = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Status bar */}
       <StatusBar
         backgroundColor={colors.background}
         barStyle={colors.background === '#ffffff' ? 'dark-content' : 'light-content'}
       />
-      {/* App header */}
       <Appbar.Header style={{ marginTop: 8, backgroundColor }}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Dry Clean" titleStyle={{ fontWeight: 'bold', color: textColor }} />

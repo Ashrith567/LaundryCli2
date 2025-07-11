@@ -9,15 +9,12 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { StatusBar } from 'react-native';
 import { useAddress } from '../context/addressContext';
 
-// Define your stack's route names and params
 type RootStackParamList = {
   ServiceSelection: undefined;
   Addresses: undefined;
-  // ...other routes
 };
 
 const Checkout = () => {
-  // Type your navigation hook
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const { cart, resetCart, addOrder } = useCart();
   const { colors } = useTheme();
@@ -30,33 +27,25 @@ const Checkout = () => {
   const borderColor = colors.outline;
   const iconBorderColor = backgroundColor === '#ffffff' ? '#000000' : '#ffffff';
 
-  // Reset showConfirmation when component unmounts or navigates away
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      setShowConfirmation(false); // Reset modal visibility when Checkout screen is focused
+      setShowConfirmation(false);
     });
 
-    return unsubscribe; // Cleanup listener on unmount
+    return unsubscribe;
   }, [navigation]);
 
-  // Handle order confirmation
   const handleConfirm = () => {
     if (cart) {
 
       const totalItems = Object.values(cart.items).reduce((a, b) => a + b, 0);
 
       const order = {
-
-        id: Date.now().toString(), // Simple unique ID
-
+        id: Date.now().toString(),
         serviceName: cart.serviceName,
-
         totalItems,
-
         totalPrice: cart.total,
-
-        placedAt: new Date().toISOString(), // Store current date/time
-
+        placedAt: new Date().toISOString(),
         selectedSlot: cart.selectedSlot,
       };
 
@@ -65,13 +54,12 @@ const Checkout = () => {
     }
     setShowConfirmation(true);
     setTimeout(() => {
-      setShowConfirmation(false); // Hide modal before navigating
+      setShowConfirmation(false);
       resetCart();
       navigation.navigate('ServiceSelection');
     }, 2000);
   };
 
-  // Render empty cart state
   if (!cart) {
     return (
       <View style={[styles.container, { backgroundColor }]}>
@@ -94,40 +82,30 @@ const Checkout = () => {
     );
   }
 
-  // Calculate total items for display
   const getTotalItems = () => {
     return Object.values(cart.items).reduce((a, b) => a + b, 0);
   };
 
-  // Get item price based on serviceId
   const getItemPrice = (item: string, count: number, serviceId: string) => {
     if (serviceId === '3') {
-      // Laundry prices
       if (item === 'Sarees') return count * 30;
-      return count * 10; // Shirts, Pants
+      return count * 10;
     }
-    // Wash + Laundry prices
     if (item === 'Sarees') return count * 40;
-    return count * 25; // Shirts, Pants
+    return count * 25;
   };
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
-      {/* Status bar */}
       <StatusBar
         backgroundColor={colors.background}
         barStyle={colors.background === '#ffffff' ? 'dark-content' : 'light-content'}
       />
-      {/* App header */}
       <Appbar.Header style={{ marginTop: 8, backgroundColor }}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Laundry" titleStyle={{ fontWeight: 'bold', color: textColor }} />
       </Appbar.Header>
-
-      {/* Main content with scrollable order summary */}
       <ScrollView contentContainerStyle={styles.scrollContent}>
-
-        {/* Address Section */}
         <View style={[styles.addressSection, { backgroundColor: inputBackground }]}>
           {currentAddress ? (
             <>
@@ -156,7 +134,6 @@ const Checkout = () => {
             </View>
           )}
         </View>
-        {/* Order Summary Card */}
         <View style={[styles.summaryCard, { backgroundColor: inputBackground }]}>
           <Text style={[styles.serviceName, { color: textColor }]}>{cart.serviceName}</Text>
           <Text style={[styles.itemsTotal, { color: textColor }]}>Items Total: {getTotalItems()}</Text>
@@ -183,7 +160,6 @@ const Checkout = () => {
           )}
         </View>
 
-        {/* Total Card */}
         <View style={[styles.totalCard, { backgroundColor: inputBackground }]}>
           <Text style={[styles.totalLabel, { color: textColor }]}>
             {cart.serviceId === '2' ? 'Expected Total' : 'Total'}
@@ -191,7 +167,6 @@ const Checkout = () => {
           <Text style={[styles.totalAmount, { color: textColor }]}>₹{cart.total}</Text>
         </View>
 
-        {/* Confirm Button */}
         <Button
           mode="contained"
           onPress={handleConfirm}
@@ -203,7 +178,6 @@ const Checkout = () => {
         </Button>
       </ScrollView>
 
-      {/* Confirmation Modal */}
       <Modal
         isVisible={showConfirmation}
         animationIn="zoomIn"
@@ -222,7 +196,6 @@ const Checkout = () => {
   );
 };
 
-// Styles for the component
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -365,12 +338,6 @@ const styles = StyleSheet.create({
   addressText: { marginBottom: 8 },
   addAddressBtn: { alignSelf: 'flex-start' },
 
-  // addressSection: {
-  //   padding: 16,
-  //   borderRadius: 12,
-  //   marginBottom: 16,
-  //   borderWidth: 1,
-  // },
   addressRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -389,7 +356,7 @@ const styles = StyleSheet.create({
   addIconButton: {
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#ccc', // or colors.outline
+    borderColor: '#ccc',
   },
 
 

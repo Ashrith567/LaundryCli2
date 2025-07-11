@@ -7,7 +7,6 @@ import { StackNavigationProp } from '@react-navigation/stack';
 type RootStackParamList = {
   ServiceSelection: undefined;
   YourOrders: undefined;
-  // Add other routes here
 };
 
 const { width } = Dimensions.get('window');

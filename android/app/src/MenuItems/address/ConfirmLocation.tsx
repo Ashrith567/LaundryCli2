@@ -18,17 +18,13 @@ const ConfirmLocation = () => {
   const { addAddress, selectAddress } = useAddress();
   const theme = useTheme();
 
-  // State for label selection and custom input
   const [label, setLabel] = useState('Home');
   const [isCustomLabel, setIsCustomLabel] = useState(false);
-  // State for menu visibility
   const [menuVisible, setMenuVisible] = useState(false);
-  // State for new fields: building name (required) and flat number (optional)
   const [buildingName, setBuildingName] = useState('');
   const [flatNumber, setFlatNumber] = useState('');
   const [notes, setNotes] = useState('');
 
-  // Function to handle label selection from dropdown
   const handleLabelSelect = (selectedLabel: string) => {
     if (selectedLabel === 'Custom') {
       setIsCustomLabel(true);
@@ -40,7 +36,6 @@ const ConfirmLocation = () => {
     setMenuVisible(false);
   };
 
-  // Check if Save button should be disabled (label or building name empty)
   const isSaveDisabled = !label.trim() || !buildingName.trim();
 
   const handleSave = () => {
@@ -53,7 +48,6 @@ const ConfirmLocation = () => {
       zip: '',
       phone: '',
       coords,
-      // Include new fields in the saved address
       buildingName,
       flatNumber,
       notes: undefined
@@ -87,8 +81,6 @@ const ConfirmLocation = () => {
       <View style={styles.container}>
         <Text style={{ fontWeight: '600', marginBottom: 8 }}>Deliver Here:</Text>
         <Text numberOfLines={2}>{address}</Text>
-
-        {/* Dropdown for label selection */}
         <View style={styles.input}>
           <Menu
             visible={menuVisible}
@@ -110,7 +102,6 @@ const ConfirmLocation = () => {
           </Menu>
         </View>
 
-        {/* Custom label input field, shown only when Custom is selected */}
         {isCustomLabel && (
           <TextInput
             label="Custom Label"
@@ -120,7 +111,6 @@ const ConfirmLocation = () => {
           />
         )}
 
-        {/* New input field for Building Name (required) */}
         <TextInput
           label="Building Name"
           value={buildingName}
@@ -128,7 +118,6 @@ const ConfirmLocation = () => {
           style={styles.input}
         />
 
-        {/* New input field for Flat Number (optional) */}
         <TextInput
           label="Flat Number (optional)"
           value={flatNumber}
@@ -143,7 +132,6 @@ const ConfirmLocation = () => {
           style={styles.input}
         />
 
-        {/* Save button, disabled if required fields are empty */}
         <Button
           mode="contained"
           onPress={handleSave}
@@ -161,7 +149,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
   input: { marginVertical: 8 },
   button: { marginTop: 16 },
-  // Style for dropdown button
   dropdownButton: { width: '100%' },
 });
 

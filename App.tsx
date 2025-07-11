@@ -6,7 +6,7 @@ import { useColorScheme } from 'react-native';
 import { lightTheme, darkTheme } from './theme/theme';
 
 const App = () => {
-  const scheme = useColorScheme(); // 'light' or 'dark'
+  const scheme = useColorScheme();
 
   return (
     <PaperProvider theme={scheme === 'dark' ? darkTheme : lightTheme}>
