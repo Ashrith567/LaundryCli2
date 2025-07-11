@@ -7,21 +7,18 @@ import { useCart } from '../context/cartContext';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { StatusBar } from 'react-native';
 
-// List of clothing items with their prices (prices used for calculation only)
 const clothingItems = [
   { name: 'Shirts', price: 10 },
   { name: 'Pants', price: 10 },
   { name: 'Sarees', price: 30 },
 ];
 
-// Define time slot type
 type TimeSlot = {
   label: string;
   startHour: number;
   endHour: number;
 };
 
-// Available time slots (same as other services)
 const timeSlots: TimeSlot[] = [
   { label: '8:00 AM - 10:00 AM', startHour: 8, endHour: 10 },
   { label: '10:00 AM - 12:00 PM', startHour: 10, endHour: 12 },
@@ -31,10 +28,8 @@ const timeSlots: TimeSlot[] = [
   { label: '6:00 PM - 8:00 PM', startHour: 18, endHour: 20 },
 ];
 
-// Define your stack's route names and params
 type RootStackParamList = {
   Checkout: undefined;
-  // ...other routes
 };
 
 const Laundry = () => {
@@ -47,7 +42,6 @@ const Laundry = () => {
   const inputBackground = colors.surface;
   const borderColor = colors.background;
 
-  // Initialize item counts from cart if serviceId matches
   const [counts, setCounts] = useState({
     Shirts: cart?.serviceId === '3' ? cart.items.Shirts || 0 : 0,
     Pants: cart?.serviceId === '3' ? cart.items.Pants || 0 : 0,
@@ -58,7 +52,6 @@ const Laundry = () => {
   const [disabledSlots, setDisabledSlots] = useState<string[]>([]);
   const [showMinItemsError, setShowMinItemsError] = useState(false);
 
-  // Determine disabled time slots based on current time
   const getDisabledSlots = (): string[] => {
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
@@ -67,7 +60,6 @@ const Laundry = () => {
       .map((slot) => slot.label);
   };
 
-  // Update disabled slots and select default slot
   useEffect(() => {
     const updateSlots = () => {
       const disabled = getDisabledSlots();
@@ -84,13 +76,11 @@ const Laundry = () => {
     return () => clearInterval(interval);
   }, [selectedSlot]);
 
-  // Increment item count
   const increment = (item: string) => {
     setCounts((prev) => ({ ...prev, [item]: prev[item as keyof typeof counts] + 1 }));
     setShowMinItemsError(false);
   };
 
-  // Decrement item count
   const decrement = (item: string) => {
     if (counts[item as keyof typeof counts] > 0) {
       setCounts((prev) => ({ ...prev, [item]: prev[item as keyof typeof counts] - 1 }));
@@ -98,21 +88,18 @@ const Laundry = () => {
     }
   };
 
-  // Calculate total items
   const getTotalItems = () => {
     return Object.values(counts).reduce((a, b) => a + b, 0);
   };
 
-  // Calculate total cost based on item prices
   const calculateTotal = () => {
     return (
-      counts.Shirts * 10 + // Shirts: ₹10 each
-      counts.Pants * 10 +  // Pants: ₹10 each
-      counts.Sarees * 30   // Sarees: ₹30 each
+      counts.Shirts * 10 +
+      counts.Pants * 10 +
+      counts.Sarees * 30
     );
   };
 
-  // Handle proceed to checkout
   const handleProceed = () => {
     const totalItems = getTotalItems();
     if (totalItems < 5) {
@@ -125,7 +112,6 @@ const Laundry = () => {
       return;
     }
 
-    // Update cart with selected items and total
     setCart({
       serviceId: '3',
       serviceName: 'Laundry',
@@ -138,7 +124,6 @@ const Laundry = () => {
     navigation.navigate('Checkout');
   };
 
-  // Render item row with counter
   const renderItemRow = (item: { name: string; price: number }) => {
     const count = counts[item.name as keyof typeof counts];
     const isZero = count === 0;
@@ -166,7 +151,6 @@ const Laundry = () => {
     );
   };
 
-  // Render time slot button
   const renderTimeSlot = (slot: TimeSlot) => {
     const isSelected = selectedSlot === slot.label;
     const isDisabled = disabledSlots.includes(slot.label);
@@ -191,35 +175,26 @@ const Laundry = () => {
 
   return (
     <View style={[styles.container, { backgroundColor, }]}>
-      {/* Status bar */}
       <StatusBar
         backgroundColor={colors.background}
         barStyle={colors.background === '#ffffff' ? 'dark-content' : 'light-content'}
       />
-      {/* App header */}
       <Appbar.Header style={{ marginTop: 8, backgroundColor }}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Laundry" titleStyle={{ fontWeight: 'bold', color: textColor }} />
       </Appbar.Header>
 
-      {/* Main content */}
       <ScrollView contentContainerStyle={styles.content}>
-        {/* Item selection */}
         {clothingItems.map(renderItemRow)}
-        {/* No total display */}
-
-        {/* Time slot selection */}
         <View style={styles.scheduleContainer}>
           <Text style={[styles.sectionTitle, { color: textColor }]}>Available slots for Pickup</Text>
           {timeSlots.map(renderTimeSlot)}
         </View>
 
-        {/* Error message for minimum 5 items */}
         {showMinItemsError && (
           <Text style={[styles.errorText, { color: colors.error }]}>Please select at least 5 items to proceed</Text>
         )}
 
-        {/* Proceed button */}
         <Button
           mode="contained"
           onPress={handleProceed}
@@ -233,7 +208,6 @@ const Laundry = () => {
   );
 };
 
-// Styles for the component
 const styles = StyleSheet.create({
   container: {
     flex: 1,

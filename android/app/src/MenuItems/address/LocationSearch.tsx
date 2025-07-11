@@ -29,7 +29,6 @@ const LocationSearch = () => {
   const [recentLocations, setRecentLocations] = useState<RecentLocation[]>([]);
   const [searchText, setSearchText] = useState('');
 
-  // Load recent locations
   useEffect(() => {
     const loadRecent = async () => {
       const saved = await AsyncStorage.getItem('recentLocations');
@@ -48,7 +47,6 @@ const LocationSearch = () => {
       };
       setSelectedLocation(location);
       
-      // Update recent locations
       const updated = [location, ...recentLocations.filter(l => l.id !== details.place_id)].slice(0, 5);
       setRecentLocations(updated);
       AsyncStorage.setItem('recentLocations', JSON.stringify(updated));
@@ -72,7 +70,7 @@ const LocationSearch = () => {
       React.useCallback(() => {
         const onBackPress = () => {
           navigation.pop(2);
-          return true; // prevent default back behavior
+          return true;
         };
   
         const backHandler = BackHandler.addEventListener('hardwareBackPress', onBackPress);

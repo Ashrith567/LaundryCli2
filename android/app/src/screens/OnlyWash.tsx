@@ -7,17 +7,14 @@ import { useCart } from '../context/cartContext';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { StatusBar } from 'react-native';
 
-// List of clothing items (no individual prices)
 const clothingItems: string[] = ['Shirts', 'Pants', 'Sarees', 'Towels', 'Bedsheets', 'Blankets', 'Pillow Covers'];
 
-// Define time slot type
 interface TimeSlot {
   label: string;
   startHour: number;
   endHour: number;
 }
 
-// Available time slots
 const timeSlots: TimeSlot[] = [
   { label: '8:00 AM - 10:00 AM', startHour: 8, endHour: 10 },
   { label: '10:00 AM - 12:00 PM', startHour: 10, endHour: 12 },
@@ -27,13 +24,10 @@ const timeSlots: TimeSlot[] = [
   { label: '6:00 PM - 8:00 PM', startHour: 18, endHour: 20 },
 ];
 
-// Define stack's route names and params
 type RootStackParamList = {
   Checkout: undefined;
-  // ...other routes
 };
 
-// Define cart item type
 interface CartItems {
   Shirts: number;
   Pants: number;
@@ -42,7 +36,7 @@ interface CartItems {
   Bedsheets: number;
   Blankets: number;
   'Pillow Covers': number;
-  [key: string]: number; // Add index signature for compatibility with Record<string, number>
+  [key: string]: number;
 }
 
 const OnlyWash: React.FC = () => {
@@ -55,7 +49,6 @@ const OnlyWash: React.FC = () => {
   const inputBackground = colors.surface;
   const borderColor = colors.background;
 
-  // Initialize item counts from cart if serviceId matches
   const [counts, setCounts] = useState<CartItems>({
     Shirts: cart?.serviceId === '2' ? cart.items.Shirts || 0 : 0,
     Pants: cart?.serviceId === '2' ? cart.items.Pants || 0 : 0,
@@ -66,14 +59,12 @@ const OnlyWash: React.FC = () => {
     'Pillow Covers': cart?.serviceId === '2' ? cart.items['Pillow Covers'] || 0 : 0,
   });
 
-  // State for expected kgs (default to 1 kg)
   const [expectedKgs, setExpectedKgs] = useState<number>(cart?.serviceId === '2' ? cart.expectedKgs || 1 : 1);
 
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [disabledSlots, setDisabledSlots] = useState<string[]>([]);
   const [showError, setShowError] = useState<boolean>(false);
 
-  // Determine disabled time slots based on current time
   const getDisabledSlots = (): string[] => {
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
@@ -82,7 +73,6 @@ const OnlyWash: React.FC = () => {
       .map((slot) => slot.label);
   };
 
-  // Update disabled slots and select default slot
   useEffect(() => {
     const updateSlots = () => {
       const disabled = getDisabledSlots();
@@ -99,13 +89,11 @@ const OnlyWash: React.FC = () => {
     return () => clearInterval(interval);
   }, [selectedSlot]);
 
-  // Increment item count
   const increment = (item: keyof CartItems) => {
     setCounts((prev) => ({ ...prev, [item]: prev[item] + 1 }));
     setShowError(false);
   };
 
-  // Decrement item count
   const decrement = (item: keyof CartItems) => {
     if (counts[item] > 0) {
       setCounts((prev) => ({ ...prev, [item]: prev[item] - 1 }));
@@ -113,29 +101,24 @@ const OnlyWash: React.FC = () => {
     }
   };
 
-  // Increment expected kgs
   const incrementKgs = () => {
     setExpectedKgs((prev) => prev + 1);
   };
 
-  // Decrement expected kgs (minimum 1 kg)
   const decrementKgs = () => {
     if (expectedKgs > 1) {
       setExpectedKgs((prev) => prev - 1);
     }
   };
 
-  // Calculate total items
   const getTotalItems = (): number => {
     return Object.values(counts).reduce((sum, count) => sum + count, 0);
   };
 
-  // Calculate total cost based on kgs (₹69 per kg)
   const calculateTotal = (): number => {
     return expectedKgs * 69;
   };
 
-  // Handle proceed to checkout
   const handleProceed = () => {
     const totalItems = getTotalItems();
     if (totalItems < 1) {
@@ -160,7 +143,6 @@ const OnlyWash: React.FC = () => {
     navigation.navigate('Checkout');
   };
 
-  // Render item row with counter
   const renderItemRow = (item: keyof CartItems) => {
     const count = counts[item];
     const isZero = count === 0;
@@ -188,7 +170,6 @@ const OnlyWash: React.FC = () => {
     );
   };
 
-  // Render expected kgs selector
   const renderKgsSelector = () => {
     return (
       <View style={[styles.kgsContainer, { backgroundColor: inputBackground, borderColor: textColor }]}>
@@ -215,7 +196,6 @@ const OnlyWash: React.FC = () => {
     );
   };
 
-  // Render time slot button
   const renderTimeSlot = (slot: TimeSlot) => {
     const isSelected = selectedSlot === slot.label;
     const isDisabled = disabledSlots.includes(slot.label);
@@ -240,40 +220,32 @@ const OnlyWash: React.FC = () => {
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
-      {/* Status bar */}
       <StatusBar
         backgroundColor={colors.background}
         barStyle={colors.background === '#ffffff' ? 'dark-content' : 'light-content'}
       />
-      {/* App header */}
       <Appbar.Header style={{ marginTop: 8, backgroundColor }}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Only Wash" titleStyle={{ fontWeight: 'bold', color: textColor }} />
       </Appbar.Header>
 
-      {/* Main content */}
       <ScrollView contentContainerStyle={styles.content}>
-        {/* Item selection */}
         {clothingItems.map((item) => renderItemRow(item as keyof CartItems))}
         <Text style={[styles.itemNote, { color: colors.error }]}>
           Note: Providing exact items count ensures no items are missed during delivery.
         </Text>
 
-        {/* Expected kgs selector */}
         {renderKgsSelector()}
 
-        {/* Time slot selection */}
         <View style={styles.scheduleContainer}>
           <Text style={[styles.sectionTitle, { color: textColor }]}>Available slots for Pickup</Text>
           {timeSlots.map(renderTimeSlot)}
         </View>
 
-        {/* Error message for empty cart */}
         {showError && (
           <Text style={[styles.errorText, { color: colors.error }]}>Please select at least 1 item to continue</Text>
         )}
 
-        {/* Proceed button */}
         <Button
           mode="contained"
           onPress={handleProceed}
@@ -287,7 +259,6 @@ const OnlyWash: React.FC = () => {
   );
 };
 
-// Styles for the component
 const styles = StyleSheet.create({
   container: {
     flex: 1,

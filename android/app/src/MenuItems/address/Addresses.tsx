@@ -33,7 +33,6 @@ const Addresses = () => {
         }
         renderItem={({ item }) => {
           const selected = currentAddress?.id === item.id;
-          // Construct full address string with optional fields
           const addressDetails = [
             item.buildingName,
             item.flatNumber ? `Flat ${item.flatNumber}` : null,
@@ -49,7 +48,6 @@ const Addresses = () => {
               <Card.Content style={styles.cardContent}>
                 <RadioButton.Android value={item.id} status={selected ? 'checked' : 'unchecked'} />
                 <View style={{ marginLeft: 8, flex: 1 }}>
-                  {/* Updated to display label and full address details */}
                   <Card.Title title={item.label} subtitle={addressDetails} subtitleNumberOfLines={3} />
                 </View>
               </Card.Content>

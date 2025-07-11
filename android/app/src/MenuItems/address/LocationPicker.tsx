@@ -22,7 +22,7 @@ type RootStackParamList = {
 };
 
 
-Geocoder.init(GOOGLE_MAPS_API_KEY); // Replace with your actual key
+Geocoder.init(GOOGLE_MAPS_API_KEY);
 
 const DEFAULT_REGION: Region = {
   latitude: 18.101672,
@@ -87,7 +87,7 @@ const LocationPicker = () => {
         },
         {
           enableHighAccuracy: true,
-          timeout: 6000, // Increased timeout for better reliability
+          timeout: 6000,
           maximumAge: 10000,
         }
       );
@@ -215,13 +215,11 @@ const LocationPicker = () => {
 
   return (
     <View style={StyleSheet.absoluteFill}>
-      {/* Appbar at the top */}
       <Appbar.Header>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Select Location" />
       </Appbar.Header>
 
-      {/* Map section below the Appbar */}
       <View style={{ flex: 1 }}>
         <MapView
           ref={mapRef}
@@ -237,13 +235,11 @@ const LocationPicker = () => {
           pitchEnabled={!isLoading}
         />
 
-        {/* Center marker */}
         <View pointerEvents="none" style={styles.markerFixed}>
           <Text style={styles.markerText}>📍</Text>
         </View>
       </View>
 
-      {/* Bottom address + buttons */}
       <View style={styles.bottom}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           {isLoading && <ActivityIndicator size="small" style={{ marginRight: 8 }} />}

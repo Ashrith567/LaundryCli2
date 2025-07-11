@@ -6,14 +6,11 @@ import { Appbar, useTheme } from 'react-native-paper';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { StatusBar } from 'react-native';
 
-// Define your stack's route names and params
 type RootStackParamList = {
   ServiceSelection: undefined;
   YourOrders: undefined;
-  // ...other routes
 };
 
-// Define the Order type to match cartContext
 type Order = {
   id: string;
   serviceName: string;
@@ -35,7 +32,6 @@ const YourOrders = () => {
   const textColor = colors.onBackground;
   const inputBackground = colors.surface;
 
-  // Format the date/time of the order
   const formatDate = (isoString: string) => {
     const date = new Date(isoString);
     return date.toLocaleString('en-US', {
@@ -61,21 +57,20 @@ const YourOrders = () => {
   const getStatusColor = (status: keyof typeof statusSteps) => {
     switch (status) {
       case 'ordered':
-        return '#B5750C'; // orange
+        return '#B5750C';
       case 'picked_up':
-        return '#9752A2'; // purple
+        return '#9752A2';
       case 'in_progress':
-        return '#B3AB52'; // yellow
+        return '#B3AB52';
       case 'delivered':
-        return '#5BBF5F'; // green
+        return '#5BBF5F';
         case 'cancelled':
-        return '#D84D50'; // red
+        return '#D84D50';
       default:
         return '#aaa';
     }
   };
 
-  // Render an empty state if there are no orders
   if (orders.length === 0) {
     return (
       <View style={[styles.container, { backgroundColor }]}>
@@ -90,13 +85,11 @@ const YourOrders = () => {
     );
   }
 
-  // Render each order as a card
   const renderOrder = ({ item }: { item: Order }) => {
-  const currentStatus = item.status ?? 'ordered'; // default fallback
+  const currentStatus = item.status ?? 'ordered';
 
   return (
     <View style={[styles.orderCard, { backgroundColor: inputBackground }]}>
-      {/* Header Row: Service Name + Status Badge */}
       <View style={styles.cardHeader}>
         <Text style={[styles.serviceName, { color: textColor }]}>{item.serviceName}</Text>
 
@@ -117,12 +110,10 @@ const YourOrders = () => {
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
-      {/* Status bar */}
       <StatusBar
         backgroundColor={colors.background}
         barStyle={colors.background === '#ffffff' ? 'dark-content' : 'light-content'}
       />
-      {/* App header */}
       <Appbar.Header style={{ marginTop: 8, backgroundColor }}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="Your Orders" titleStyle={{ fontWeight: 'bold', color: textColor }} />
@@ -168,7 +159,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     borderWidth: 1,
-    width: width - 32, // Account for padding
+    width: width - 32,
   },
   serviceName: {
     fontSize: 18,
